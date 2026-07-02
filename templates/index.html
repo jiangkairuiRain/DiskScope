@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>DiskScope - 磁盘空间透视眼</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+</head>
+<body>
+    <header>
+        <button id="btn-root">📀 返回根目录</button>
+        <button id="btn-up">⬆ 向上级</button>
+        <span style="margin-left: auto;">DiskScope</span>
+    </header>
+    <main>
+        <div class="left-panel">
+            <div class="tree" id="tree"></div>
+        </div>
+        <div class="right-panel">
+            <div id="chart-container"></div>
+            <div id="placeholder" class="placeholder">请点击左侧磁盘开始分析</div>
+            <div id="progress-overlay" class="hidden">
+                <div>正在扫描...</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+                <div id="progress-text"></div>
+            </div>
+        </div>
+    </main>
+    <script src="/static/script.js"></script>
+</body>
+</html>

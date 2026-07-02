@@ -1,0 +1,162 @@
+/* 基础重置与配色 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f0f2f5;
+    color: #333;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+header {
+    background: #2c3e50;
+    color: white;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+header button {
+    background: #34495e;
+    border: none;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+header button:hover {
+    background: #3d566e;
+}
+main {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+.left-panel {
+    width: 280px;
+    background: white;
+    border-right: 1px solid #ddd;
+    overflow-y: auto;
+    padding: 10px;
+}
+.right-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: white;
+    position: relative;
+}
+#chart-container {
+    flex: 1;
+    min-height: 400px;
+}
+.placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #999;
+    font-size: 18px;
+    height: 100%;
+}
+
+/* 树形结构 */
+.tree ul {
+    list-style: none;
+    padding-left: 20px;
+}
+.tree li {
+    margin: 2px 0;
+    cursor: pointer;
+    user-select: none;
+}
+.tree .node {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 6px;
+    border-radius: 3px;
+}
+.tree .node:hover {
+    background: #eef2f7;
+}
+.tree .node.active {
+    background: #3498db;
+    color: white;
+}
+.tree .arrow {
+    font-size: 12px;
+    width: 15px;
+    text-align: center;
+    transition: transform 0.2s;
+}
+.tree .arrow.expanded {
+    transform: rotate(90deg);
+}
+.tree .icon {
+    font-size: 14px;
+}
+
+/* 进度遮罩 */
+#progress-overlay {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(255,255,255,0.9);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+}
+.progress-bar {
+    width: 60%;
+    height: 10px;
+    background: #ddd;
+    border-radius: 5px;
+    overflow: hidden;
+    margin: 10px 0;
+}
+.progress-fill {
+    height: 100%;
+    width: 0%;
+    background: #3498db;
+    transition: width 0.3s;
+}
+#progress-text {
+    font-size: 14px;
+    color: #555;
+}
+.hidden {
+    display: none !important;
+}
+
+/* 弹窗 */
+.modal {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+}
+.modal-content {
+    background: white;
+    padding: 25px;
+    border-radius: 8px;
+    max-width: 500px;
+    width: 90%;
+    position: relative;
+}
+.modal-close {
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    cursor: pointer;
+    font-size: 22px;
+}
