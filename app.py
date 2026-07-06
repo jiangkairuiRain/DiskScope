@@ -1,8 +1,15 @@
 import os
 import webbrowser
-import threading
 from flask import Flask, render_template, request, jsonify
-from scanner import start_scan, get_progress, get_node
+from scanner import (
+    start_scan,
+    get_progress,
+    get_node,
+    get_drive_scan_status,
+    get_drive_task_id,
+    prefetch_all_drives,
+    start_drive_scan
+)
 from utils import format_size
 
 app = Flask(__name__)
@@ -79,7 +86,6 @@ def aggregate_children(children):
             'count': len(others)
         }
         top.append(other_item)
-        # 重新排序
         top.sort(key=lambda x: x['size'], reverse=True)
         result = top
 
@@ -93,17 +99,28 @@ def index():
 @app.route('/api/drives')
 def drives():
     import psutil
+    import concurrent.futures as _cf
     parts = psutil.disk_partitions()
     drives = []
     for p in parts:
+        # disk_usage 在不可达的网络盘/光驱上会挂起，加超时保护
         try:
-            usage = psutil.disk_usage(p.mountpoint)
+            with _cf.ThreadPoolExecutor(max_workers=1) as ex:
+                usage = ex.submit(psutil.disk_usage, p.mountpoint).result(timeout=2)
+        except Exception:
+            continue
+        try:
+            path = p.mountpoint.replace('\\', '/')
+            status = get_drive_scan_status(path)
+            task_id = get_drive_task_id(path)
             drives.append({
-                'label': p.mountpoint,
+                'label': path,
                 'total': usage.total,
                 'total_str': format_size(usage.total),
                 'used': usage.used,
-                'free': usage.free
+                'free': usage.free,
+                'scan_status': status,
+                'task_id': task_id
             })
         except Exception:
             continue
@@ -115,7 +132,7 @@ def scan():
     path = data.get('path')
     if not path:
         return jsonify({'error': 'Path required'}), 400
-    # 标准化路径
+    # 标准化路径，并确保盘符格式统一
     path = os.path.normpath(path)
     task_id = start_scan(path)
     return jsonify({'task_id': task_id})
@@ -157,7 +174,7 @@ def subdirs():
     dirs = []
     for c in children:
         if c['type'] == 'dir':
-            # 检查是否有子目录（递归只查一层）
+            # 检查是否有子目录（至少有一层子目录）
             has_subdirs = any(sub['type'] == 'dir' for sub in c.get('children', []))
             dirs.append({
                 'name': c['name'],
@@ -166,8 +183,21 @@ def subdirs():
             })
     return jsonify(dirs)
 
+@app.route('/api/rescan', methods=['POST'])
+def rescan():
+    data = request.get_json(silent=True) or {}
+    path = data.get('path')
+    if not path:
+        return jsonify({'error': 'Path required'}), 400
+    path = os.path.normpath(path)
+    task_id = start_drive_scan(path)
+    return jsonify({'task_id': task_id})
+
 # ---------- 启动 ----------
 if __name__ == '__main__':
+    # 程序启动时立即开始后台预扫描所有盘符
+    prefetch_all_drives()
+
     port = 5000
     webbrowser.open(f'http://127.0.0.1:{port}')
     app.run(host='127.0.0.1', port=port, debug=False, threaded=True)

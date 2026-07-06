@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>DiskScope - 磁盘空间透视眼</title>
     <link rel="stylesheet" href="/static/style.css">
-    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <script src="/static/echarts.min.js"></script>
 </head>
 <body>
     <header>
@@ -28,6 +28,16 @@
             </div>
         </div>
     </main>
+    <div id="startup-overlay" class="hidden">
+        <div class="startup-box">
+            <div class="startup-title">正在扫描所有磁盘…</div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="startup-fill"></div>
+            </div>
+            <div id="startup-text">准备中…</div>
+            <div id="startup-drives"></div>
+        </div>
+    </div>
     <script src="/static/script.js"></script>
 </body>
 </html>
